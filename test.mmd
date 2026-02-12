@@ -1,0 +1,25 @@
+sequenceDiagram
+    participant GW as Gateway
+    participant Door
+    participant Kernel
+    participant Room
+
+    GW->>Door: door:connect {from, room?}
+    Door->>GW: item {session} + done
+
+    GW->>Door: door:join {session, room}
+    Door->>GW: done
+
+    GW->>Door: door:message {session, room, content}
+    Note over Door: validate session + membership
+    Door->>Kernel: room:message {room, from, content}
+    Kernel->>Room: room:message
+    Room-->>Kernel: item* + done
+    Kernel-->>Door: item* + done
+    Door-->>GW: item* + done
+
+    GW->>Door: door:part {session, room}
+    Door->>GW: done
+
+    GW->>Door: door:disconnect {session}
+    Door->>GW: done
